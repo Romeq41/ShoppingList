@@ -6,12 +6,7 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        Map<String, List<String>> categoryMap = new HashMap<>();
-        try {
-            categoryMap = ShoppingListTools.readFile("list.txt");
-        } catch (Exception IOException) {
-            System.out.println("Error");
-        }
+
 
         File categories = new File("categories.txt");
         if (!categories.exists()) {
@@ -19,15 +14,23 @@ public class Main {
             return;
         }
 
+        Map<String, List<String>> categoryMap = new HashMap<>();
+        try {
+            categoryMap = ShoppingListTools.readFile("list.txt");
+        } catch (Exception IOException) {
+            System.out.println("Error");
+        }
+
         ShoppingListTools.menuPrint();
         while (true) {
+
 
             System.out.println("Choose an action:");
             Scanner scanner = new Scanner(System.in);
 
             try {
                 int input = scanner.nextInt();
-                if (input < 0 || input > 7) {
+                if (input < 0 || input > 9) {
                     System.out.println("Choose a correct number!");
                 } else if (input == 1) {
                     ShoppingListTools.addProduct(categoryMap);
@@ -47,6 +50,20 @@ public class Main {
                 } else if (input == 7) {
                     ShoppingListTools.saveList(categoryMap, "list.txt");
                     ShoppingListTools.menuPrint();
+                } else if (input == 8) {
+                    System.out.println("Pick Action:");
+                    System.out.println("1. Add product");
+                    System.out.println("2. Delete product");
+                    Scanner scanner1 = new Scanner(System.in);
+                    int editInput = scanner1.nextInt();
+                    if (editInput == 1) {
+                        ShoppingListTools.addProductToCategoryFile("categories.txt");
+                    } else if (editInput == 2) {
+                        ShoppingListTools.DeleteProductFromCategoryFile("categories.txt");
+                    } else {
+                        System.out.println("Choose a correct number!");
+                    }
+
                 } else {
                     return;
                 }
@@ -56,8 +73,6 @@ public class Main {
             }
         }
     }
-
-
 }
 
 

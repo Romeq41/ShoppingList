@@ -13,6 +13,7 @@ public class ShoppingListTools {
         System.out.println("5. Delete all products from a specific category");
         System.out.println("6. Delete a product");
         System.out.println("7. Save the list to a file");
+        System.out.println("8. Modify source file categories");
         System.out.println("0. Exit the program");
     }
 
@@ -347,4 +348,149 @@ public class ShoppingListTools {
         }
     }
 
+
+    /**
+     * @param fileName Name of the file that is going to be read through
+     * @return null if fileName file does not exist. Filename if exists.
+     */
+    public static Map<String, List<String>> categoryEditInit(String fileName) {
+        try {
+            return readFile(fileName);
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+            System.out.println("Creating " + fileName + " file...");
+            try {
+                File newFile = new File(fileName);
+                boolean isCreated = newFile.createNewFile();
+
+                if(isCreated) System.out.println("Created file: " + fileName);
+            }catch (IOException x){
+                System.out.println(x.getMessage());
+            }
+
+
+            return null;
+        }
+
+    }
+
+    /**
+     * Adds product to category template file.
+     *
+     * @param fileName filename of the file to be read.
+     */
+    public static void addProductToCategoryFile(String fileName){
+
+        Map<String, List<String>> categoryFile = categoryEditInit(fileName);
+
+        if (categoryFile == null) {
+            return;
+        }
+
+        printAllProducts(categoryFile);
+
+        String newCategoryName;
+        while (true) {
+            if ((newCategoryName = getCategoryInputAndValidateIsFileEmpty()) != null) {
+                String tempCategories = getCategoryIfExists(categoryFile, newCategoryName);
+                if (tempCategories != null) {
+                    newCategoryName = tempCategories;
+                } else {
+                    System.out.println("No category found");
+                }
+
+                break;
+            }
+
+        }
+
+
+        String newProductName;
+        while (true) {
+            Scanner scanner1 = new Scanner(System.in);
+            System.out.println("Enter product name:");
+            newProductName = scanner1.nextLine();
+            List<String> list = categoryFile.get(newCategoryName);
+            if (list == null) {
+                List<String> newProductList = new ArrayList<>();
+                newProductList.add(newProductName);
+                categoryFile.put(newCategoryName, newProductList);
+                break;
+            } else {
+                String newProduct = getProductIfExistsFromSpecificCategory(list, newProductName);
+                if (newProduct != null) {
+                    System.out.println("This product already exists");
+                } else {
+                    list.add(newProductName);
+                    break;
+                }
+            }
+
+        }
+
+        saveList(categoryFile, fileName);
+
+    }
+
+    public static String getCategoryInputAndValidateIsFileEmpty() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter category name:");
+        String deleteCategoryName = scanner.nextLine();
+        if (deleteCategoryName.isEmpty()) {
+            System.out.println("Invalid category name");
+        } else {
+            return deleteCategoryName;
+        }
+        return null;
+    }
+
+    public static void DeleteProductFromCategoryFile(String fileName) {
+        Map<String, List<String>> categoryFile;
+
+        try {
+            categoryFile = readFile(fileName);
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+            return;
+        }
+
+        printAllProducts(categoryFile);
+
+        String deleteCategoryName;
+        while (true) {
+
+            deleteCategoryName = getCategoryInputAndValidateIsFileEmpty();
+
+            if ((deleteCategoryName = getCategoryIfExists(categoryFile, deleteCategoryName)) == null) {
+                System.out.println("No category found");
+            } else {
+                break;
+            }
+        }
+
+        String deleteProductName;
+        while (true) {
+            Scanner scanner1 = new Scanner(System.in);
+            System.out.println("Enter product name:");
+            deleteProductName = scanner1.nextLine();
+
+            List<String> list = categoryFile.get(deleteCategoryName);
+
+            deleteProductName = getProductIfExistsFromSpecificCategory(list, deleteProductName);
+
+            if (deleteProductName == null) {
+                System.out.println("No product found");
+            } else {
+                list.remove(deleteProductName);
+                if (list.isEmpty()) {
+                    categoryFile.remove(deleteProductName);
+                }
+                System.out.println("Deleted product: " + deleteProductName);
+                break;
+            }
+        }
+
+        saveList(categoryFile, fileName);
+
+    }
 }
