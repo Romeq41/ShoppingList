@@ -348,7 +348,6 @@ public class ShoppingListTools {
         }
     }
 
-
     /**
      * @param fileName Name of the file that is going to be read through
      * @return null if fileName file does not exist. Filename if exists.

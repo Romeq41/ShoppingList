@@ -30,7 +30,7 @@ public class Main {
 
             try {
                 int input = scanner.nextInt();
-                if (input < 0 || input > 9) {
+                if (input < 0 || input > 8) {
                     System.out.println("Choose a correct number!");
                 } else if (input == 1) {
                     ShoppingListTools.addProduct(categoryMap);

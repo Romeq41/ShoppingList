@@ -1,0 +1,13 @@
+Motoryzacja:Felgi
+Motoryzacja:wachacze
+Motoryzacja:dywanik
+Motoryzacja:wycieraczki
+Motoryzacja:felgi
+Motoryzacja:opony
+Higiena:szczoteczka do zębów
+Higiena:szczotka do włosów
+Higiena:szampon
+Spozywcze:Chleb
+Spozywcze:Boczek
+Spozywcze:Marchew
+Spozywcze:Cebula
