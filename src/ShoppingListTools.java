@@ -375,7 +375,6 @@ public class ShoppingListTools {
 
     /**
      * Adds product to category template file.
-     *
      * @param fileName filename of the file to be read.
      */
     public static void addProductToCategoryFile(String fileName){
@@ -431,6 +430,10 @@ public class ShoppingListTools {
 
     }
 
+    /**
+     * Gets category input and checks if it is empty.
+     * @return null if empty else return category name
+     */
     public static String getCategoryInputAndValidateIsFileEmpty() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Enter category name:");
@@ -443,6 +446,10 @@ public class ShoppingListTools {
         return null;
     }
 
+    /**
+     * Removes specific product from category template file.
+     * @param fileName File with categories and products
+     */
     public static void DeleteProductFromCategoryFile(String fileName) {
         Map<String, List<String>> categoryFile;
 
