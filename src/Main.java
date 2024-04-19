@@ -6,17 +6,15 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-
-
         File categories = new File("categories.txt");
         if (!categories.exists()) {
             System.out.println("No file with the list of products. Prepare a file named categories.txt and fill it in the following way:\nCategory:Product\nCategory:Product\n");
             return;
         }
 
-        Map<String, List<String>> categoryMap = new HashMap<>();
+        Map<String, List<ShoppingListTools.Product>> categoryMap = new HashMap<>();
         try {
-            categoryMap = ShoppingListTools.readFile("list.txt");
+            categoryMap = ShoppingListTools.readCategoryFile("list.txt");
         } catch (Exception IOException) {
             System.out.println("Error");
         }

@@ -23,15 +23,15 @@ public class ShoppingListTools {
      * @param shoppingList our current shoppingList
      * @param fileName     name of the file being read.
      */
-    public static void saveList(Map<String, List<String>> shoppingList, String fileName) {
+    public static void saveList(Map<String, List<Product>> shoppingList, String fileName) {
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
             try {
-                for (Map.Entry<String, List<String>> entry : shoppingList.entrySet()) {
+                for (Map.Entry<String, List<Product>> entry : shoppingList.entrySet()) {
                     String key = entry.getKey();
-                    List<String> values = entry.getValue();
-                    for (String value : values) {
-                        writer.write(key + ":" + value + "\n");
+                    List<Product> values = entry.getValue();
+                    for (Product value : values) {
+                        writer.write(key + ":" + value.productName + ":" + value.Quantity + ":" + value.units+"\n");
                     }
                 }
             } catch (Exception NullPointerException) {
@@ -49,7 +49,7 @@ public class ShoppingListTools {
      *
      * @param shoppingList our current shoppingList
      */
-    public static void deleteProduct(Map<String, List<String>> shoppingList) {
+    public static void deleteProduct(Map<String, List<Product>> shoppingList) {
         if (shoppingList.isEmpty()) {
             System.out.println("The list is empty!");
             return;
@@ -70,23 +70,47 @@ public class ShoppingListTools {
                 break;
             }
         }
-
+        Product productToBeRemoved;
+        List<Product> categoryList;
         while (true) {
             System.out.println("Choose a product:");
             Scanner scanner = new Scanner(System.in);
             String productName = scanner.nextLine();
 
-            List<String> list = shoppingList.get(category);
-            String itemName = getProductIfExistsFromSpecificCategory(list, productName);
+            categoryList = shoppingList.get(category);
+            productToBeRemoved = getProductIfExistsFromSpecificCategory(categoryList, productName);
 
-            if (itemName == null) {
+            if (productToBeRemoved == null) {
                 System.out.println("Choose the correct option!");
             } else {
-                list.remove(itemName);
-                if (list.isEmpty()) {
-                    shoppingList.remove(category);
-                }
                 break;
+            }
+        }
+
+        double quantity;
+        while (true) {
+            System.out.println("Enter quantity of " + productToBeRemoved.productName + " in " + productToBeRemoved.units + " to be removed:");
+            Scanner scanner1 = new Scanner(System.in);
+
+            try {
+                quantity = scanner1.nextDouble();
+
+                if (quantity < 1) {
+                    System.out.println("Enter correct value!");
+                    continue;
+                } else if (quantity >= productToBeRemoved.Quantity) {
+                    categoryList.remove(productToBeRemoved);
+                    System.out.println("value exceeds quantity of product. Product removed.");
+                    if (categoryList.isEmpty()) {
+                        shoppingList.remove(category);
+                    }
+                    break;
+                }
+
+                productToBeRemoved.Quantity -= quantity;
+                break;
+            } catch (InputMismatchException e) {
+                System.out.println("Incorrect value");
             }
         }
 
@@ -97,8 +121,8 @@ public class ShoppingListTools {
      * @param categoryName categoryName being searched for.
      * @return return categoryName. If not found return null.
      */
-    public static String getCategoryIfExists(Map<String, List<String>> shoppingList, String categoryName) {
-        for (Map.Entry<String, List<String>> entry : shoppingList.entrySet()) {
+    public static String getCategoryIfExists(Map<String, List<Product>> shoppingList, String categoryName) {
+        for (Map.Entry<String, List<Product>> entry : shoppingList.entrySet()) {
             String category = entry.getKey();
             String category1 = category.toLowerCase();
             String input1 = categoryName.toLowerCase();
@@ -110,16 +134,16 @@ public class ShoppingListTools {
     }
 
     /**
-     * @param CategoriesInShoppingList categories in our shoppingList
-     * @param productName              name of the product being searched for
-     * @return productName if found. null if not found.
+     * @param productsFromSpecificCategory categories in our shoppingList
+     * @param newProduct                   name of the newProduct being searched for
+     * @return newProduct if found. null if not found.
      */
-    public static String getProductIfExistsFromSpecificCategory(List<String> CategoriesInShoppingList, String productName) {
-        for (String itemName : CategoriesInShoppingList) {
-            String productName1 = productName.toLowerCase();
-            String itemName1 = itemName.toLowerCase();
-            if (Objects.equals(productName1, itemName1)) {
-                return itemName;
+    public static Product getProductIfExistsFromSpecificCategory(List<Product> productsFromSpecificCategory, String newProduct) {
+        for (Product product : productsFromSpecificCategory) {
+            String newProductName = newProduct.toLowerCase();
+            String productName = product.productName.toLowerCase();
+            if (Objects.equals(productName, newProductName)) {
+                return product;
             }
         }
         return null;
@@ -131,13 +155,13 @@ public class ShoppingListTools {
      *
      * @param shoppingList our current shopping list
      */
-    public static void deleteAllProductsByCategory(Map<String, List<String>> shoppingList) {
+    public static void deleteAllProductsByCategory(Map<String, List<Product>> shoppingList) {
         if (shoppingList.isEmpty()) {
             System.out.println("The list is empty!");
             return;
         }
 
-        for (Map.Entry<String, List<String>> entry : shoppingList.entrySet()) {
+        for (Map.Entry<String, List<Product>> entry : shoppingList.entrySet()) {
             System.out.println("\t" + entry.getKey());
         }
 
@@ -152,8 +176,8 @@ public class ShoppingListTools {
             if (category == null) {
                 System.out.println("There is no such category");
             } else {
-                List<String> itemList = shoppingList.get(category);
-                itemList.clear();
+                List<Product> productList = shoppingList.get(category);
+                productList.clear();
                 shoppingList.remove(category);
                 System.out.println("Category deleted: " + category);
                 break;
@@ -166,45 +190,13 @@ public class ShoppingListTools {
     /**
      * @param shoppingList our current shopping list
      */
-    public static void deleteAllProducts(Map<String, List<String>> shoppingList) {
+    public static void deleteAllProducts(Map<String, List<Product>> shoppingList) {
         if (shoppingList.isEmpty()) {
             System.out.println("The list is empty!!!");
             return;
         }
         shoppingList.clear();
         System.out.println("Content of the list deleted");
-
-    }
-
-    /**
-     * Reads through file of categories and products and saves them to hashMap.
-     *
-     * @param fileName file name to read.
-     * @return return hashMap of categories and products
-     * @throws IOException if file not found.
-     */
-    public static Map<String, List<String>> readFile(String fileName) throws IOException {
-        Map<String, List<String>> items = new HashMap<>();
-
-        try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] parts = line.split(":");
-                if (parts.length == 2) {
-                    String category = parts[0].trim();
-                    String itemName = parts[1].trim();
-                    if (items.containsKey(category)) {
-                        items.get(category).add(itemName);
-                    } else {
-                        List<String> list = new ArrayList<>();
-                        list.add(itemName);
-                        items.put(category, list);
-                    }
-                }
-            }
-        }
-
-        return items;
     }
 
 
@@ -213,17 +205,17 @@ public class ShoppingListTools {
      *
      * @param shoppingList Our current shopping list.
      */
-    public static void addProduct(Map<String, List<String>> shoppingList) throws IOException {
-        Map<String, List<String>> FileData;
+    public static void addProduct(Map<String, List<Product>> shoppingList) throws IOException {
+        Map<String, List<Product>> FileData;
 
         try {
-            FileData = readFile("Categories.txt");
+            FileData = readCategoryFile("Categories.txt");
         } catch (FileNotFoundException e) {
             System.out.println(e.getMessage());
             return;
         }
 
-        for (Map.Entry<String, List<String>> entry : FileData.entrySet()) {
+        for (Map.Entry<String, List<Product>> entry : FileData.entrySet()) {
             String category = entry.getKey();
             System.out.println("\t" + category);
         }
@@ -244,67 +236,84 @@ public class ShoppingListTools {
             }
         }
 
-        List<String> tempList = FileData.get(fileCategory);
-        for (String itemName : tempList) {
-            System.out.println("\t" + itemName);
+        List<Product> tempProductListDisplay = FileData.get(fileCategory);
+        for (Product product : tempProductListDisplay) {
+            System.out.println("\t" + product.productName);
         }
 
 
-        String productNameToBeAdded;
+        Product productToBeAdded;
         while (true) {
             System.out.println("Choose a Product (Enter a name from the above list):");
             Scanner scanner = new Scanner(System.in);
             String productName = scanner.nextLine();
 
-            List<String> list = FileData.get(fileCategory);
+            List<Product> fileDataList = FileData.get(fileCategory);
+            productToBeAdded = getProductIfExistsFromSpecificCategory(fileDataList, productName);
 
+            if (productToBeAdded != null) {
+                double quantity;
+                while (true) {
+                    System.out.println("Enter quantity of " + productToBeAdded.productName + " in " + productToBeAdded.units + ":");
+                    Scanner scanner1 = new Scanner(System.in);
 
-            productNameToBeAdded = getProductIfExistsFromSpecificCategory(list, productName);
+                    try {
+                        quantity = scanner1.nextDouble();
 
-            if (productNameToBeAdded != null) {
-                if (!shoppingList.isEmpty() && shoppingList.get(fileCategory) != null) {
-                    if (shoppingList.get(fileCategory).contains(productNameToBeAdded)) {
-                        System.out.println("The product is already in the list. Returning to menu.");
-                        fileCategory = null;
+                        if (quantity < 1) {
+                            System.out.println("Enter correct value!");
+                            continue;
+                        }
+                        List<Product> tempProductList = shoppingList.get(fileCategory);
+                        if (tempProductList != null) {
+                            Product tempProductToBeAdded = getProductIfExistsFromSpecificCategory(tempProductList, productToBeAdded.productName);
+                            if (tempProductToBeAdded != null) {
+                                tempProductToBeAdded.Quantity += quantity;
+                            } else {
+                                productToBeAdded.Quantity = quantity;
+                                shoppingList.get(fileCategory).add(productToBeAdded);
+                            }
+                        } else {
+                            List<Product> newProductList = new ArrayList<>();
+                            productToBeAdded.Quantity = quantity;
+                            newProductList.add(productToBeAdded);
+                            shoppingList.put(fileCategory, newProductList);
+                        }
                         break;
+                    } catch (InputMismatchException e) {
+                        System.out.println("Incorrect value");
                     }
+
+
                 }
             }
 
-            if (productNameToBeAdded == null) {
+            if (productToBeAdded == null) {
                 System.out.println("Choose a correct option!");
             } else {
-                System.out.println("Added product: " + productName);
+                System.out.println("Added product: " + productToBeAdded.productName);
                 break;
             }
         }
 
-        String category = getCategoryIfExists(shoppingList, fileCategory);
 
-        if (category == null) {
-            List<String> newProductList = new ArrayList<>();
-            newProductList.add(productNameToBeAdded);
-            shoppingList.put(fileCategory, newProductList);
-        } else {
-            shoppingList.get(fileCategory).add(productNameToBeAdded);
-        }
     }
 
     /**
      * @param shoppingList // our current shopping list
      */
-    public static void printAllProducts(Map<String, List<String>> shoppingList) {
+    public static void printAllProducts(Map<String, List<Product>> shoppingList) {
         if (shoppingList.isEmpty()) {
             System.out.println("The list is empty!");
             return;
         }
 
-        for (Map.Entry<String, List<String>> entry : shoppingList.entrySet()) {
+        for (Map.Entry<String, List<Product>> entry : shoppingList.entrySet()) {
             String category = entry.getKey();
-            List<String> itemList = entry.getValue();
+            List<Product> productListList = entry.getValue();
             System.out.println(category);
-            for (String itemName : itemList) {
-                System.out.println("\t" + itemName);
+            for (Product product : productListList) {
+                System.out.println("\t" + product.productName + ", Quantity: " + product.Quantity + " " + product.units);
             }
         }
     }
@@ -312,13 +321,13 @@ public class ShoppingListTools {
     /**
      * @param shoppingList // our current shopping list
      */
-    public static void printProductsByCategories(Map<String, List<String>> shoppingList) {
+    public static void printProductsByCategories(Map<String, List<Product>> shoppingList) {
         if (shoppingList.isEmpty()) {
             System.out.println("The list is empty!");
             return;
         }
 
-        for (Map.Entry<String, List<String>> entry : shoppingList.entrySet()) {
+        for (Map.Entry<String, List<Product>> entry : shoppingList.entrySet()) {
             String category = entry.getKey();
             System.out.println(category);
         }
@@ -334,11 +343,11 @@ public class ShoppingListTools {
             if (category == null) {
                 System.out.println("No such category exists");
             } else {
-                List<String> itemList = shoppingList.get(category);
+                List<Product> productList = shoppingList.get(category);
                 System.out.println(category);
 
-                for (String itemName : itemList) {
-                    System.out.println("\t" + itemName);
+                for (Product product : productList) {
+                    System.out.println("\t" + product.productName + ", Quantity: " + product.Quantity + product.units);
                 }
 
 
@@ -352,9 +361,9 @@ public class ShoppingListTools {
      * @param fileName Name of the file that is going to be read through
      * @return null if fileName file does not exist. Filename if exists.
      */
-    public static Map<String, List<String>> categoryEditInit(String fileName) {
+    public static Map<String, List<Product>> categoryEditInit(String fileName) {
         try {
-            return readFile(fileName);
+            return readCategoryFile(fileName);
         } catch (IOException e) {
             System.out.println(e.getMessage());
             System.out.println("Creating " + fileName + " file...");
@@ -362,8 +371,8 @@ public class ShoppingListTools {
                 File newFile = new File(fileName);
                 boolean isCreated = newFile.createNewFile();
 
-                if(isCreated) System.out.println("Created file: " + fileName);
-            }catch (IOException x){
+                if (isCreated) System.out.println("Created file: " + fileName);
+            } catch (IOException x) {
                 System.out.println(x.getMessage());
             }
 
@@ -373,13 +382,50 @@ public class ShoppingListTools {
 
     }
 
+
+    public static Map<String, List<Product>> readCategoryFile(String fileName) throws IOException {
+        Map<String, List<Product>> categoryTemplateList = new HashMap<>();
+
+        try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(":");
+                if (parts.length == 4) {
+                    String category = parts[0].trim();
+                    String productName = parts[1].trim();
+                    String tempQuantity = parts[2].trim();
+                    double quantity;
+                    try {
+                        quantity = Double.parseDouble(tempQuantity);
+                    } catch (NumberFormatException e) {
+                        System.out.println(e.getMessage());
+                        categoryTemplateList = null;
+                        return categoryTemplateList;
+                    }
+                    String units = parts[3].trim();
+                    Product product = new Product(productName, quantity, units);
+                    if (categoryTemplateList.containsKey(category)) {
+                        categoryTemplateList.get(category).add(product);
+                    } else {
+                        List<Product> list = new ArrayList<>();
+                        list.add(product);
+                        categoryTemplateList.put(category, list);
+                    }
+                }
+            }
+        }
+
+        return categoryTemplateList;
+    }
+
     /**
      * Adds product to category template file.
+     *
      * @param fileName filename of the file to be read.
      */
-    public static void addProductToCategoryFile(String fileName){
+    public static void addProductToCategoryFile(String fileName) {
 
-        Map<String, List<String>> categoryFile = categoryEditInit(fileName);
+        Map<String, List<Product>> categoryFile = categoryEditInit(fileName);
 
         if (categoryFile == null) {
             return;
@@ -408,18 +454,28 @@ public class ShoppingListTools {
             Scanner scanner1 = new Scanner(System.in);
             System.out.println("Enter product name:");
             newProductName = scanner1.nextLine();
-            List<String> list = categoryFile.get(newCategoryName);
+            List<Product> list = categoryFile.get(newCategoryName);
             if (list == null) {
-                List<String> newProductList = new ArrayList<>();
-                newProductList.add(newProductName);
+                Scanner scanner2 = new Scanner(System.in);
+                System.out.println("Enter units of measurement:");
+                String units = scanner2.nextLine();
+
+                List<Product> newProductList = new ArrayList<>();
+                Product product = new Product(newProductName, 0, units);
+                newProductList.add(product);
                 categoryFile.put(newCategoryName, newProductList);
                 break;
             } else {
-                String newProduct = getProductIfExistsFromSpecificCategory(list, newProductName);
+                Product newProduct = getProductIfExistsFromSpecificCategory(list, newProductName);
                 if (newProduct != null) {
                     System.out.println("This product already exists");
                 } else {
-                    list.add(newProductName);
+                    Scanner scanner2 = new Scanner(System.in);
+                    System.out.println("Enter units of measurement:");
+                    String units = scanner2.nextLine();
+
+                    Product product = new Product(newProductName, 0, units);
+                    list.add(product);
                     break;
                 }
             }
@@ -432,6 +488,7 @@ public class ShoppingListTools {
 
     /**
      * Gets category input and checks if it is empty.
+     *
      * @return null if empty else return category name
      */
     public static String getCategoryInputAndValidateIsFileEmpty() {
@@ -448,13 +505,14 @@ public class ShoppingListTools {
 
     /**
      * Removes specific product from category template file.
+     *
      * @param fileName File with categories and products
      */
     public static void DeleteProductFromCategoryFile(String fileName) {
-        Map<String, List<String>> categoryFile;
+        Map<String, List<Product>> categoryFile;
 
         try {
-            categoryFile = readFile(fileName);
+            categoryFile = readCategoryFile(fileName);
         } catch (IOException e) {
             System.out.println(e.getMessage());
             return;
@@ -474,29 +532,55 @@ public class ShoppingListTools {
             }
         }
 
-        String deleteProductName;
+        Product deleteProduct;
         while (true) {
             Scanner scanner1 = new Scanner(System.in);
             System.out.println("Enter product name:");
-            deleteProductName = scanner1.nextLine();
+            String newdeleteProductName = scanner1.nextLine();
 
-            List<String> list = categoryFile.get(deleteCategoryName);
+            List<Product> list = categoryFile.get(deleteCategoryName);
 
-            deleteProductName = getProductIfExistsFromSpecificCategory(list, deleteProductName);
+            deleteProduct = getProductIfExistsFromSpecificCategory(list, newdeleteProductName);
 
-            if (deleteProductName == null) {
+            if (deleteProduct == null) {
                 System.out.println("No product found");
             } else {
-                list.remove(deleteProductName);
+                list.remove(deleteProduct);
                 if (list.isEmpty()) {
-                    categoryFile.remove(deleteProductName);
+                    categoryFile.remove(deleteCategoryName);
                 }
-                System.out.println("Deleted product: " + deleteProductName);
+                System.out.println("Deleted product: " + deleteProduct.productName + ", Quantity: " + deleteProduct.Quantity + " " + deleteProduct.units);
                 break;
             }
         }
 
         saveList(categoryFile, fileName);
+
+    }
+
+    public static final class Product {
+        private final String productName;
+        private final String units;
+        private double Quantity;
+
+        public Product(String productName, double Quantity, String units) {
+            this.productName = productName;
+            this.Quantity = Quantity;
+            this.units = units;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == this) return true;
+            if (obj == null || obj.getClass() != this.getClass()) return false;
+            var that = (Product) obj;
+            return Objects.equals(this.productName, that.productName) && Double.doubleToLongBits(this.Quantity) == Double.doubleToLongBits(that.Quantity) && Objects.equals(this.units, that.units);
+        }
+
+        @Override
+        public String toString() {
+            return "Product[" + "productName=" + productName + ", " + "Quantity=" + Quantity + ", " + "units=" + units + ']';
+        }
 
     }
 }
