@@ -1,2 +1,6 @@
-Motoryzacja:Felgi:2.0:szt
-Higiena:szampon:2.3:L
+Motoryzacja:Felgi:4.0:szt
+Motoryzacja:dywanik:4.0:szt
+Spozywcze:Boczek:5.0:szt
+Spozywcze:Marchew:5.0:szt
+Spozywcze:cebula:22.0:szt
+Higiena:szczoteczka do zębów:55.0:szt

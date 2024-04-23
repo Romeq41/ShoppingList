@@ -6,7 +6,7 @@ Motoryzacja:opony:0.0:szt
 Higiena:szczoteczka do zębów:0.0:szt
 Higiena:szczotka do włosów:0.0:szt
 Higiena:szampon:0.0:L
-Spozywcze:Chleb:0.0:szt
 Spozywcze:Boczek:0.0:szt
 Spozywcze:Marchew:0.0:szt
 Spozywcze:cebula:0.0:szt
+Spozywcze:Mleko:0.0:Litr
