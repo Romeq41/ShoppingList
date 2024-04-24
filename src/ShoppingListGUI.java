@@ -64,7 +64,7 @@ public class ShoppingListGUI {
 
         JButton deleteSpecifiedProductButton = new JButton("Delete product");
         deleteSpecifiedProductButton.setBounds(50, 150, 120, 30);
-        deleteSpecifiedProductButton.addActionListener(e -> deleteProductDialog(shoppingList));
+        deleteSpecifiedProductButton.addActionListener(e -> deleteProductDialog(shoppingList, "list.txt"));
         frame.add(deleteSpecifiedProductButton);
 
         JButton saveListButton = new JButton("Save list");
@@ -74,7 +74,7 @@ public class ShoppingListGUI {
 
         JButton deleteAllProductsFromSpecifiedCategoryButton = new JButton("Delete category");
         deleteAllProductsFromSpecifiedCategoryButton.setBounds(190, 200, 150, 30);
-        deleteAllProductsFromSpecifiedCategoryButton.addActionListener(e -> deleteCategoryDialog(shoppingList));
+        deleteAllProductsFromSpecifiedCategoryButton.addActionListener(e -> deleteCategoryDialog(shoppingList, "list.txt"));
         frame.add(deleteAllProductsFromSpecifiedCategoryButton);
 
         JButton modifyListButton = new JButton("Modify template");
@@ -127,13 +127,13 @@ public class ShoppingListGUI {
         fileContentsLabel.setBounds(320, 25, 200, 10);
         dialog.add(fileContentsLabel);
 
-        JTextArea categoriesAndProductsOutputTextField = new JTextArea();
-        categoriesAndProductsOutputTextField.setEditable(false);
-        JScrollPane categoriesAndProductsOutputScrollPane = new JScrollPane(categoriesAndProductsOutputTextField);
-        categoriesAndProductsOutputScrollPane.setBounds(320, 40, 250, 125);
-        dialog.add(categoriesAndProductsOutputScrollPane);
+        JTextArea outputTextField = new JTextArea();
+        outputTextField.setEditable(false);
+        JScrollPane outputScrollPane = new JScrollPane(outputTextField);
+        outputScrollPane.setBounds(320, 40, 250, 125);
+        dialog.add(outputScrollPane);
 
-        fillOutputCategoryTextArea(fileName,categoriesAndProductsOutputTextField);
+        fillOutputTextArea(fileName, outputTextField);
 
         JButton addButton = new JButton("Add");
         addButton.setBounds(175, 125, 100, 30);
@@ -168,7 +168,7 @@ public class ShoppingListGUI {
         JButton deleteButton = new JButton("Delete");
         deleteButton.setBounds(200, 50, 100, 30);
         deleteButton.addActionListener(e -> {
-            deleteProductFromTemplateFileDialog();
+            deleteProductFromTemplateFileDialog(fileName);
             dialog.dispose();
         });
         dialog.add(deleteButton);
@@ -211,13 +211,13 @@ public class ShoppingListGUI {
         templateTextAreaLabel.setBounds(320, 25, 200, 10);
         dialog.add(templateTextAreaLabel);
 
-        JTextArea categoriesAndProductsOutputTextField = new JTextArea();
-        categoriesAndProductsOutputTextField.setEditable(false);
-        JScrollPane categoriesAndProductsOutputScrollPane = new JScrollPane(categoriesAndProductsOutputTextField);
-        categoriesAndProductsOutputScrollPane.setBounds(320, 40, 250, 125);
-        dialog.add(categoriesAndProductsOutputScrollPane);
+        JTextArea outputTextField = new JTextArea();
+        outputTextField.setEditable(false);
+        JScrollPane outputScrollPane = new JScrollPane(outputTextField);
+        outputScrollPane.setBounds(320, 40, 250, 125);
+        dialog.add(outputScrollPane);
 
-        fillOutputCategoryTextArea(fileName,categoriesAndProductsOutputTextField);
+        fillOutputTextArea(fileName, outputTextField);
 
         JTextArea quantityTextArea = new JTextArea();
         quantityTextArea.setBounds(100, 100, 175, 20);
@@ -237,7 +237,7 @@ public class ShoppingListGUI {
         dialog.setVisible(true);
     }
 
-    private void fillOutputCategoryTextArea(String fileName, JTextArea categoriesAndProductsOutputTextField){
+    private void fillOutputTextArea(String fileName, JTextArea categoriesAndProductsOutputTextField) {
         Map<String, List<Product>> fileData;
 
         try {
@@ -247,7 +247,7 @@ public class ShoppingListGUI {
             return;
         }
 
-        if (fileData != null){
+        if (fileData != null) {
             ShoppingListToolsGUI.printCategoryFile(fileData, categoriesAndProductsOutputTextField, PrintOption.All);
         }
     }
@@ -269,15 +269,14 @@ public class ShoppingListGUI {
         categoryNameTextArea.setBounds(100, 50, 175, 20);
         dialog.add(categoryNameTextArea);
 
-        JTextArea categoriesAndProductsOutputTextField = new JTextArea();
-        categoriesAndProductsOutputTextField.setEditable(false);
+        JTextArea outputTextField = new JTextArea();
+        outputTextField.setEditable(false);
+        JScrollPane outputScrollPane = new JScrollPane(outputTextField);
+        outputScrollPane.setBounds(320, 25, 250, 100);
 
-        JScrollPane categoriesAndProductsOutputScrollPane = new JScrollPane(categoriesAndProductsOutputTextField);
-        categoriesAndProductsOutputScrollPane.setBounds(320, 25, 250, 100);
+        dialog.add(outputScrollPane);
 
-        dialog.add(categoriesAndProductsOutputScrollPane);
-
-        ShoppingListToolsGUI.printCategoryFile(shoppingList, categoriesAndProductsOutputTextField, PrintOption.CATEGORIES);
+        ShoppingListToolsGUI.printCategoryFile(shoppingList, outputTextField, PrintOption.CATEGORIES);
 
         JButton addButton = new JButton("Print");
         addButton.setBounds(225, 150, 100, 30);
@@ -292,7 +291,7 @@ public class ShoppingListGUI {
         dialog.setVisible(true);
     }
 
-    private void deleteCategoryDialog(Map<String, List<Product>> shoppingList) {
+    private void deleteCategoryDialog(Map<String, List<Product>> shoppingList, String fileName) {
         JDialog dialog = new JDialog(frame, "Delete Category", true);
         dialog.setLayout(null);
         dialog.setResizable(false);
@@ -309,18 +308,21 @@ public class ShoppingListGUI {
         categoryNameTextArea.setBounds(100, 50, 175, 20);
         dialog.add(categoryNameTextArea);
 
+        JLabel fileContentsLabel = new JLabel("Contents of " + fileName + ":");
+        fileContentsLabel.setBounds(320, 25, 200, 10);
+        dialog.add(fileContentsLabel);
 
-        JTextArea categoriesAndProductsOutputTextField = new JTextArea();
-        categoriesAndProductsOutputTextField.setEditable(false);
+        JTextArea outputTextField = new JTextArea();
+        outputTextField.setEditable(false);
+        JScrollPane outputScrollPane = new JScrollPane(outputTextField);
+        outputScrollPane.setBounds(320, 40, 250, 125);
+        dialog.add(outputScrollPane);
 
-        JScrollPane categoriesAndProductsOutputScrollPane = new JScrollPane(categoriesAndProductsOutputTextField);
-        categoriesAndProductsOutputScrollPane.setBounds(320, 25, 250, 100);
-        dialog.add(categoriesAndProductsOutputScrollPane);
 
-        ShoppingListToolsGUI.printCategoryFile(shoppingList, categoriesAndProductsOutputTextField, PrintOption.CATEGORIES);
+        ShoppingListToolsGUI.printCategoryFile(shoppingList, outputTextField, PrintOption.CATEGORIES);
 
         JButton addButton = new JButton("Delete");
-        addButton.setBounds(225, 150, 100, 30);
+        addButton.setBounds(175, 125, 100, 30);
         addButton.addActionListener(e -> {
             ShoppingListToolsGUI.removeAllProductsByCategory(shoppingList, categoryNameTextArea);
             dialog.dispose();
@@ -332,7 +334,7 @@ public class ShoppingListGUI {
         dialog.setVisible(true);
     }
 
-    private void deleteProductDialog(Map<String, List<Product>> shoppingList) {
+    private void deleteProductDialog(Map<String, List<Product>> shoppingList, String fileName) {
         JDialog dialog = new JDialog(frame, "Remove product from shopping list", true);
         dialog.setLayout(null);
         dialog.setResizable(false);
@@ -365,14 +367,19 @@ public class ShoppingListGUI {
         quantityTextArea.setBounds(100, 100, 175, 20);
         dialog.add(quantityTextArea);
 
-        JTextArea categoriesAndProductsOutputTextField = new JTextArea();
-        categoriesAndProductsOutputTextField.setEditable(false);
-        JScrollPane categoriesAndProductsOutputScrollPane = new JScrollPane(categoriesAndProductsOutputTextField);
-        categoriesAndProductsOutputScrollPane.setBounds(320, 25, 250, 100);
-        dialog.add(categoriesAndProductsOutputScrollPane);
+        JLabel fileContentsLabel = new JLabel("Contents of " + fileName + ":");
+        fileContentsLabel.setBounds(320, 25, 200, 10);
+        dialog.add(fileContentsLabel);
 
 
-        ShoppingListToolsGUI.printAllProductsGUI(shoppingList, categoriesAndProductsOutputTextField);
+        JTextArea outputTextField = new JTextArea();
+        outputTextField.setEditable(false);
+        JScrollPane outputScrollPane = new JScrollPane(outputTextField);
+        outputScrollPane.setBounds(320, 25, 250, 100);
+        dialog.add(outputScrollPane);
+
+
+        ShoppingListToolsGUI.printAllProductsGUI(shoppingList, outputTextField);
 
         JButton addButton = new JButton("Delete");
         addButton.setBounds(225, 150, 100, 30);
@@ -389,14 +396,14 @@ public class ShoppingListGUI {
     }
 
 
-    private void deleteProductFromTemplateFileDialog() {
+    private void deleteProductFromTemplateFileDialog(String fileName) {
         JDialog dialog = new JDialog(frame, "Remove product from template file", true);
 
         dialog.setLayout(null);
         dialog.setResizable(false);
 
-        JLabel titleLabel = new JLabel("Enter info about the product");
-        titleLabel.setBounds(115, 25, 175, 20);
+        JLabel titleLabel = new JLabel("Enter Product details: ");
+        titleLabel.setBounds(125, 25, 150, 20);
         dialog.add(titleLabel);
 
         JLabel categoryLabel = new JLabel("Category:");
@@ -415,20 +422,28 @@ public class ShoppingListGUI {
         productNameTextArea.setBounds(100, 75, 175, 20);
         dialog.add(productNameTextArea);
 
-        JLabel templateTextAreaLabel = new JLabel("Contents of " + "categories.txt" + ":");
-        templateTextAreaLabel.setBounds(320, 25, 250, 10);
-        dialog.add(templateTextAreaLabel);
+        JLabel unitLabel = new JLabel("Units:");
+        unitLabel.setBounds(40, 100, 75, 20);
+        dialog.add(unitLabel);
 
-        JTextArea categoriesAndProductsOutputTextField = new JTextArea();
-        categoriesAndProductsOutputTextField.setEditable(false);
-        JScrollPane categoriesAndProductsOutputScrollPane = new JScrollPane(categoriesAndProductsOutputTextField);
-        categoriesAndProductsOutputScrollPane.setBounds(320, 50, 250, 90);
-        dialog.add(categoriesAndProductsOutputScrollPane);
+        JTextArea unitsTextArea = new JTextArea();
+        unitsTextArea.setBounds(100, 100, 175, 20);
+        dialog.add(unitsTextArea);
 
-        fillOutputCategoryTextArea("categories.txt",categoriesAndProductsOutputTextField);
+        JLabel fileContentsLabel = new JLabel("Contents of " + fileName + ":");
+        fileContentsLabel.setBounds(320, 25, 200, 10);
+        dialog.add(fileContentsLabel);
+
+        JTextArea outputTextField = new JTextArea();
+        outputTextField.setEditable(false);
+        JScrollPane outputScrollPane = new JScrollPane(outputTextField);
+        outputScrollPane.setBounds(320, 40, 250, 125);
+        dialog.add(outputScrollPane);
+
+        fillOutputTextArea(fileName, outputTextField);
 
         JButton addButton = new JButton("Delete");
-        addButton.setBounds(225, 150, 100, 30);
+        addButton.setBounds(175, 125, 100, 30);
         addButton.addActionListener(e -> {
             ShoppingListToolsGUI.removeProductFromTemplateFileGUI("categories.txt", categoryNameTextArea, productNameTextArea);
             dialog.dispose();

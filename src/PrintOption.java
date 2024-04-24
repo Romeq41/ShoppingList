@@ -1,6 +1,5 @@
 public enum PrintOption {
     CATEGORIES,
-    PRODUCTS,
-    All;
+    PRODUCTS, All
 }
 

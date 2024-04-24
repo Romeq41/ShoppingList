@@ -175,8 +175,8 @@ public class ShoppingListToolsGUI {
             return;
         }
 
-        if(fileData == null){
-            JOptionPane.showMessageDialog(null,"Category file corrupted", "IO error", JOptionPane.ERROR_MESSAGE);
+        if (fileData == null) {
+            JOptionPane.showMessageDialog(null, "Category file corrupted", "IO error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -320,7 +320,7 @@ public class ShoppingListToolsGUI {
             List<Product> productList = shoppingList.get(category);
             outputTextField.setText(category + ":\n");
             for (Product product : productList) {
-                outputTextField.append("     " + product.productName + ", Quantity: " + product.Quantity + product.units);
+                outputTextField.append("     " + product.productName + ", Quantity: " + product.Quantity + product.units + "\n");
             }
         }
     }
@@ -397,10 +397,10 @@ public class ShoppingListToolsGUI {
     /**
      * Adds a product to the category template file.
      *
-     * @param fileName             the name of the file to be read
+     * @param fileName              the name of the file to be read
      * @param categoryInputTextArea the text area containing the category name
-     * @param productInputTextArea the text area containing the product name
-     * @param unitInputTextArea    the text area containing the unit
+     * @param productInputTextArea  the text area containing the product name
+     * @param unitInputTextArea     the text area containing the unit
      */
     public static void addProductToTemplateFileGUI(String fileName, JTextArea categoryInputTextArea, JTextArea productInputTextArea, JTextArea unitInputTextArea) {
         Map<String, List<Product>> categoryFile = categoryEditInitGUI(fileName);
@@ -458,8 +458,8 @@ public class ShoppingListToolsGUI {
             return;
         }
 
-        if(categoryFile == null){
-            JOptionPane.showMessageDialog(null,"Category file corrupted", "IO error", JOptionPane.ERROR_MESSAGE);
+        if (categoryFile == null) {
+            JOptionPane.showMessageDialog(null, "Category file corrupted", "IO error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 

@@ -1,4 +1,5 @@
 import java.util.Objects;
+
 public final class Product {
     final String productName;
     final String units;
